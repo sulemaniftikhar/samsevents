@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="css/magnific-popup.css">
   <link rel="stylesheet" href="css/aos.css">
   <link rel="stylesheet" href="css/ionicons.min.css">
-  
+
   <link rel="stylesheet" href="css/flaticon.css">
   <link rel="stylesheet" href="css/icomoon.css">
   <link rel="stylesheet" href="css/style.css">
@@ -39,6 +39,7 @@
         <ul class="navbar-nav ml-auto">
           <li class="nav-item"><a href="index.html" class="nav-link">Gallery</a></li>
           <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+          <li class="nav-item"><a href="events.html" class="nav-link">Events</a></li>
           <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
           <li class="nav-item active"><a href="contact.html" class="nav-link">Contact</a></li>
           <li class="nav-item"><a href="cart.html" class="nav-link">Cart (0)</a></li>
@@ -100,12 +101,24 @@
               <input type="text" class="form-control" placeholder="Phone Number">
             </div>
             <div class="form-group">
+              <select id="stateSelect" name="state" class="form-control js-state-select">
+                <option value="">Select State</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select id="citySelect" name="city" class="form-control js-city-select" disabled>
+                <option value="">Select City</option>
+              </select>
+            </div>
+            <div class="form-group">
               <select class="form-control" placeholder="Event Type">
                 <option value="">Select Event Type</option>
                 <option value="birthday">Birthday Party</option>
                 <option value="picnic">Luxury Picnic</option>
                 <option value="bridal-shower">Bridal Shower</option>
                 <option value="baby-shower">Baby Shower</option>
+                <option value="wedding">Wedding</option>
+                <option value="matrimonial">Matrimonial Services</option>
                 <option value="bachelorette">Bachelorette Party</option>
                 <option value="tablescape">Custom Tablescape</option>
                 <option value="balloon-garland">Balloon Garland</option>
@@ -113,8 +126,11 @@
                 <option value="other">Other</option>
               </select>
             </div>
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Event Date (if known)">
+            <div class="form-group" id="event-date">
+              <div class="input-with-icon">
+                <span class="icon icon-calendar"></span>
+                <input id="eventDate" name="event_date" type="text" class="form-control" placeholder="Event date">
+              </div>
             </div>
             <div class="form-group">
               <input type="text" class="form-control" placeholder="Number of Guests">
@@ -305,6 +321,7 @@
             <ul class="list-unstyled">
               <li><a href="index.html" class="py-2 d-block">Home</a></li>
               <li><a href="services.html" class="py-2 d-block">Services</a></li>
+              <li><a href="events.html" class="py-2 d-block">Events</a></li>
               <li><a href="about.html" class="py-2 d-block">About</a></li>
               <li><a href="contact.html" class="py-2 d-block">Contact</a></li>
               <li><a href="gallery.html" class="py-2 d-block">Gallery</a></li>
@@ -358,7 +375,10 @@
   <script src="js/jquery.magnific-popup.min.js"></script>
   <script src="js/aos.js"></script>
   <script src="js/jquery.animateNumber.min.js"></script>
-  
+  <!-- Flatpickr (date picker) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
   <script src="js/scrollax.min.js"></script>
   <script src="js/main.js"></script>
 

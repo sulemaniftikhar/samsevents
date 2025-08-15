@@ -278,19 +278,117 @@ AOS.init({
 
 
 	// Mobile touch fixes
-	$(document).ready(function() {
+	$(document).ready(function () {
+		// Populate US states and dynamic cities (United States only)
+		(function initUsLocationSelectors() {
+			var stateSelects = document.querySelectorAll('.js-state-select');
+			var citySelects = document.querySelectorAll('.js-city-select');
+			if (!stateSelects.length) return;
+
+			var usStates = [
+				{ code: 'AL', name: 'Alabama' }, { code: 'AK', name: 'Alaska' }, { code: 'AZ', name: 'Arizona' },
+				{ code: 'AR', name: 'Arkansas' }, { code: 'CA', name: 'California' }, { code: 'CO', name: 'Colorado' },
+				{ code: 'CT', name: 'Connecticut' }, { code: 'DE', name: 'Delaware' }, { code: 'DC', name: 'District of Columbia' }, { code: 'FL', name: 'Florida' },
+				{ code: 'GA', name: 'Georgia' }, { code: 'HI', name: 'Hawaii' }, { code: 'ID', name: 'Idaho' },
+				{ code: 'IL', name: 'Illinois' }, { code: 'IN', name: 'Indiana' }, { code: 'IA', name: 'Iowa' },
+				{ code: 'KS', name: 'Kansas' }, { code: 'KY', name: 'Kentucky' }, { code: 'LA', name: 'Louisiana' },
+				{ code: 'ME', name: 'Maine' }, { code: 'MD', name: 'Maryland' }, { code: 'MA', name: 'Massachusetts' },
+				{ code: 'MI', name: 'Michigan' }, { code: 'MN', name: 'Minnesota' }, { code: 'MS', name: 'Mississippi' },
+				{ code: 'MO', name: 'Missouri' }, { code: 'MT', name: 'Montana' }, { code: 'NE', name: 'Nebraska' },
+				{ code: 'NV', name: 'Nevada' }, { code: 'NH', name: 'New Hampshire' }, { code: 'NJ', name: 'New Jersey' },
+				{ code: 'NM', name: 'New Mexico' }, { code: 'NY', name: 'New York' }, { code: 'NC', name: 'North Carolina' },
+				{ code: 'ND', name: 'North Dakota' }, { code: 'OH', name: 'Ohio' }, { code: 'OK', name: 'Oklahoma' },
+				{ code: 'OR', name: 'Oregon' }, { code: 'PA', name: 'Pennsylvania' }, { code: 'RI', name: 'Rhode Island' },
+				{ code: 'SC', name: 'South Carolina' }, { code: 'SD', name: 'South Dakota' }, { code: 'TN', name: 'Tennessee' },
+				{ code: 'TX', name: 'Texas' }, { code: 'UT', name: 'Utah' }, { code: 'VT', name: 'Vermont' },
+				{ code: 'VA', name: 'Virginia' }, { code: 'WA', name: 'Washington' }, { code: 'WV', name: 'West Virginia' },
+				{ code: 'WI', name: 'Wisconsin' }, { code: 'WY', name: 'Wyoming' }
+			];
+
+			function fillStates(select) {
+				usStates.forEach(function (s) {
+					var opt = document.createElement('option');
+					// Use full state name as value to satisfy common city APIs requiring full state names
+					opt.value = s.name;
+					opt.textContent = s.name;
+					opt.setAttribute('data-code', s.code);
+					select.appendChild(opt);
+				});
+			}
+
+			Array.prototype.forEach.call(stateSelects, function (sel) { fillStates(sel); });
+
+			function setCityOptions(selectEl, items) {
+				selectEl.innerHTML = '';
+				var base = document.createElement('option');
+				base.value = '';
+				base.textContent = 'Select City';
+				selectEl.appendChild(base);
+				items.forEach(function (name) {
+					var opt = document.createElement('option');
+					opt.value = name;
+					opt.textContent = name;
+					selectEl.appendChild(opt);
+				});
+			}
+
+			function setCityLoading(selectEl) {
+				selectEl.innerHTML = '';
+				var base = document.createElement('option');
+				base.value = '';
+				base.textContent = 'Loading cities...';
+				selectEl.appendChild(base);
+			}
+
+			function onStateChange(evt) {
+				var stateName = evt.target.value;
+				var contextRoot = evt.target.closest('form') || evt.target.closest('.row') || document;
+				var citySel = contextRoot.querySelector('.js-city-select');
+				if (!citySel) return;
+				citySel.disabled = !stateName;
+				setCityOptions(citySel, []);
+				if (!stateName) return;
+				setCityLoading(citySel);
+				// CountriesNow API: expects full state name for United States
+				fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ country: 'United States', state: stateName })
+				}).then(function (r) { return r.json(); })
+					.then(function (data) {
+						if (data && data.data && Array.isArray(data.data)) {
+							setCityOptions(citySel, data.data);
+							citySel.disabled = false;
+						} else {
+							setCityOptions(citySel, []);
+						}
+					}).catch(function () { setCityOptions(citySel, []); });
+			}
+
+			Array.prototype.forEach.call(stateSelects, function (sel) {
+				sel.addEventListener('change', onStateChange);
+			});
+		})();
+		// Contact page date picker (disable past dates)
+		if (window.flatpickr && document.getElementById('eventDate')) {
+			flatpickr('#eventDate', {
+				minDate: 'today',
+				dateFormat: 'Y-m-d',
+				disableMobile: true
+			});
+		}
 		// Prevent default touch behavior on carousel elements
-		$('.owl-carousel').on('touchstart touchmove touchend', function(e) {
+		$('.owl-carousel').on('touchstart touchmove touchend', function (e) {
 			e.stopPropagation();
 		});
-		
+
 		// Fix mobile scroll issues
-		$('body').on('touchmove', function(e) {
+		$('body').on('touchmove', function (e) {
 			if ($(e.target).closest('.owl-carousel').length) {
 				e.preventDefault();
 			}
 		});
-		
+
 		// Enable smooth scrolling on mobile
 		$('html').css('scroll-behavior', 'smooth');
 	});
